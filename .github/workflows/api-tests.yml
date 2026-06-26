@@ -1,0 +1,57 @@
+name: 🚀 API Tests
+
+run-name: Run all FastAPI endpoint tests.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  api-tests:
+    name: FastAPI endpoint tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Fetch the repository content for the workflow runner.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Use the same Python version as the project runtime.
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Install runtime dependencies first.
+      - name: Install application dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Install test and development dependencies.
+      - name: Install development dependencies
+        run: pip install -r requirements-dev.txt
+
+      # Run only the FastAPI endpoint test suite.
+      - name: Run FastAPI API tests
+        run: |
+          pytest \
+            tests/test_health.py \
+            tests/test_analyze_api.py \
+            tests/test_invalid_payload.py \
+            -v
+
+      # Publish a concise run summary in the GitHub Actions UI.
+      - name: Write API test summary
+        if: always()
+        run: |
+          {
+            echo "## 🚀 API Tests"
+            echo ""
+            echo "Run all FastAPI endpoint tests."
+            echo ""
+            echo "Executed test files:"
+            echo "- tests/test_health.py"
+            echo "- tests/test_analyze_api.py"
+            echo "- tests/test_invalid_payload.py"
+          } >> "$GITHUB_STEP_SUMMARY"
