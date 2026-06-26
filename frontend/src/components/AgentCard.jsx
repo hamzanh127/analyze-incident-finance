@@ -1,5 +1,3 @@
-import React from 'react';
-
 const AgentCard = ({ title, statusText, statusLevel, details }) => {
   const getBadgeClass = (level) => {
     switch (level) {

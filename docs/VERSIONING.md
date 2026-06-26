@@ -18,6 +18,21 @@ The project follows [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.
 
 ## Version History
 
+### v1.7.0 - LangSmith Observability UI
+
+**Goal:** Expose the full multi-agent observability surface in the React frontend.
+
+**What was introduced:**
+- Visualisation de l'etat LangSmith.
+- Affichage correlation_id.
+- Timeline des agents.
+- Monitoring panel enrichi.
+- Observability dashboard.
+- Chat agent connecte au contexte d'analyse.
+- `frontend/.env.example` with `VITE_API_BASE_URL=http://localhost:8002`.
+
+---
+
 ### v1.0.0 — Backend MVP
 
 **Goal:** Establish a production-grade Python backend with FastAPI and a multi-agent orchestration pipeline.

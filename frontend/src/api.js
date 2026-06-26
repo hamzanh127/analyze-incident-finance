@@ -1,33 +1,46 @@
-const API_BASE_URL = 'http://localhost:8002';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8002';
 
-export const analyzeIncident = async (payload) => {
-  const response = await fetch(`${API_BASE_URL}/analyze`, {
-    method: 'POST',
+const request = async (path, options = {}) => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(options.headers || {}),
     },
-    body: JSON.stringify(payload),
+    ...options,
   });
 
   if (!response.ok) {
-    throw new Error('Failed to analyze incident');
+    let message = `Request failed: ${response.status}`;
+    try {
+      const body = await response.json();
+      message = body.detail || body.message || message;
+    } catch {
+      // Keep the generic HTTP error if the backend did not return JSON.
+    }
+    throw new Error(message);
   }
 
   return response.json();
 };
 
-export const getHealth = async () => {
-  const response = await fetch(`${API_BASE_URL}/health`);
-  if (!response.ok) {
-    throw new Error('Failed to get health status');
-  }
-  return response.json();
-};
+export const analyzeIncident = (payload) => (
+  request('/analyze', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+);
 
-export const getMetrics = async () => {
-  const response = await fetch(`${API_BASE_URL}/metrics`);
-  if (!response.ok) {
-    throw new Error('Failed to get metrics');
-  }
-  return response.json();
-};
+export const sendChatMessage = (payload) => (
+  request('/chat', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+);
+
+export const getHealth = () => request('/health');
+
+export const getMetrics = () => request('/metrics');
+
+export const getObservability = () => request('/observability');
+
+export { API_BASE_URL };

@@ -1,5 +1,3 @@
-import React from 'react';
-
 const AgentMessage = ({ agentName, avatar, statusLevel, statusText, content, details }) => {
   const getBadgeClass = (level) => {
     switch (level) {

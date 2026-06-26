@@ -3,6 +3,27 @@
 User-facing and trainer-facing summary of what each version of `finance-incident-multi-agent` delivers.
 
 ---
+## v1.7.0 - LangSmith Observability UI
+
+**Release date:** 2026-06-26
+
+This release turns the React frontend into a full observability dashboard for the finance multi-agent workflow.
+
+### What's New
+
+- A LangGraph workflow view shows the full path from Client to FastAPI, Supervisor, Risk, Fraud, Compliance, Monitoring, and Report.
+- A trace timeline highlights correlation ID generation, agent completion, monitoring, report generation, and final decision.
+- LangSmith status is visible in the UI, including project, tracing, environment, version, run name, trace availability, and correlation ID.
+- The observability panel exposes decision, risk level, execution time, telemetry flags, and trace status.
+- The monitoring panel supports both legacy safety output and the newer hybrid static plus Grok safety format.
+- The chat panel sends the current incident, analysis result, message, and history to `POST /chat`.
+- `frontend/.env.example` documents `VITE_API_BASE_URL=http://localhost:8002`.
+
+### What It Means for a Demo
+
+An evaluator can submit an incident and immediately see the orchestration, safety checks, metrics, LangSmith state, correlation ID, and a contextual chat experience in one interface.
+
+---
 ## v1.6.0 - LangSmith Observability
 
 **Release date:** 2026-06-26

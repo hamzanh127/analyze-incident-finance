@@ -5,6 +5,18 @@ All notable changes to `finance-incident-multi-agent` are documented here.
 This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) conventions and adheres to [Semantic Versioning](https://semver.org/).
 
 ---
+## [1.7.0] - 2026-06-26 - LangSmith Observability UI
+
+### Added
+- React observability dashboard for LangGraph workflow, agent timeline, LangSmith status, correlation IDs, metrics, monitoring, and final analysis report.
+- Connected `AgentChat` that sends message, incident, analysis result, and chat history to `POST /chat`.
+- `frontend/.env.example` with `VITE_API_BASE_URL=http://localhost:8002`.
+
+### Changed
+- Frontend API client now uses `import.meta.env.VITE_API_BASE_URL` with a localhost fallback.
+- Metrics, monitoring, LangSmith, and observability panels tolerate missing backend fields and disabled LangSmith tracing.
+
+---
 ## [1.6.0] - 2026-06-26 - LangSmith Observability
 
 ### Added

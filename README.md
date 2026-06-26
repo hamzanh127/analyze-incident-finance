@@ -327,6 +327,7 @@ finance-incident-multi-agent/
 | **v1.4.0** | Production Release | Complete versioning documentation; project ready for presentation |
 | **v1.5.0** | Grok-Based AI Monitoring | Hybrid static + Grok safety pipeline, final decision, fallback |
 | **v1.6.0** | LangSmith Observability | External LangGraph tracing, metadata, `/observability` endpoint |
+| **v1.7.0** | LangSmith Observability UI | Frontend workflow, correlation_id, monitoring, metrics, LangSmith panels and connected chat |
 
 See [`docs/VERSIONING.md`](docs/VERSIONING.md) for the full versioning strategy, [`docs/CHANGELOG.md`](docs/CHANGELOG.md) for the detailed feature log, and [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) for user-facing release summaries.
 

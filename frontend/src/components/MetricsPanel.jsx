@@ -1,64 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { getMetrics } from '../api';
-
-const MetricsPanel = () => {
-  const [metrics, setMetrics] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        const data = await getMetrics();
-        setMetrics(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load metrics');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMetrics();
-    // Refresh every 10 seconds
-    const interval = setInterval(fetchMetrics, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  if (loading && !metrics) {
-    return <div className="card text-center"><span className="loading-spinner"></span> Loading metrics...</div>;
-  }
-
-  if (error && !metrics) {
-    return null; // Silent failure for the panel so it doesn't break the UI
-  }
+const MetricsPanel = ({ metrics, loading, error }) => {
+  const items = [
+    ['total_requests', metrics?.total_requests ?? 0],
+    ['total_errors', metrics?.total_errors ?? 0],
+    ['total_high_risk', metrics?.total_high_risk ?? 0],
+    ['total_manual_review', metrics?.total_manual_review ?? 0],
+    ['total_blocked', metrics?.total_blocked ?? 0],
+    ['average_latency_ms', metrics?.average_latency_ms !== undefined ? `${metrics.average_latency_ms} ms` : 'N/A'],
+  ];
 
   return (
-    <div className="card" style={{ marginTop: '1.5rem', backgroundColor: '#fdfdfe' }}>
-      <h2>System Metrics</h2>
-      <div className="metric-grid">
-        <div className="metric-item">
-          <span className="metric-label">Total Requests</span>
-          <span className="metric-value">{metrics?.total_requests || 0}</span>
+    <section className="card">
+      <div className="section-header">
+        <div>
+          <h2>Metrics</h2>
+          <p className="text-muted">Live counters exposed by the backend.</p>
         </div>
-        <div className="metric-item">
-          <span className="metric-label">Success Rate</span>
-          <span className="metric-value">
-            {metrics?.total_requests ? (((metrics.total_requests - (metrics?.error_count || 0)) / metrics.total_requests) * 100).toFixed(1) : 0}%
-          </span>
-        </div>
-        <div className="metric-item">
-          <span className="metric-label">Avg Latency</span>
-          <span className="metric-value">{metrics?.avg_latency_ms ? `${metrics.avg_latency_ms.toFixed(1)} ms` : 'N/A'}</span>
-        </div>
-        <div className="metric-item">
-          <span className="metric-label">High Risk Incidents</span>
-          <span className="metric-value" style={{ color: 'var(--danger)' }}>
-            {metrics?.risk_levels?.high || 0}
-          </span>
-        </div>
+        {loading && <span className="loading-spinner" />}
       </div>
-    </div>
+      {error && <div className="notice notice-warning">{error}</div>}
+      <div className="metric-grid">
+        {items.map(([label, value]) => (
+          <div className="metric-item" key={label}>
+            <span className="metric-label">{label}</span>
+            <span className="metric-value">{value}</span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
 
