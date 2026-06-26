@@ -18,6 +18,22 @@ The project follows [Semantic Versioning 2.0.0](https://semver.org/) — `MAJOR.
 
 ## Version History
 
+### v1.8.0 - Grok Chat & Supervision Documentation
+
+**Goal:** Complete the finance supervision experience with a real Grok-backed chat endpoint and consolidated documentation.
+
+**What was introduced:**
+- `POST /chat` endpoint using `GrokService.call_grok()`.
+- Typed chat schemas for message, incident context, analysis result and history.
+- Mocked backend tests for chat success and Grok unavailable behavior.
+- Full frontend supervision platform with six pages.
+- `lucide-react` icons for the frontend.
+- `GLOBAL_DOCUMENTATION.md` for project-level explanation.
+- `TECHNICAL_DOCUMENTATION.md` for architecture and implementation details.
+- README updates for `/chat`, frontend usage, Docker troubleshooting and version `v1.8.0`.
+
+---
+
 ### v1.7.0 - LangSmith Observability UI
 
 **Goal:** Expose the full multi-agent observability surface in the React frontend.

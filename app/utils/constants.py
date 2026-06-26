@@ -1,7 +1,7 @@
 """Application constants."""
 
 SERVICE_NAME = "Finance Incident Multi-Agent"
-SERVICE_VERSION = "1.6.0"
+SERVICE_VERSION = "1.8.0"
 DEFAULT_ENVIRONMENT = "local"
 DEFAULT_LOG_LEVEL = "INFO"
 

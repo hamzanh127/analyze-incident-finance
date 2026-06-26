@@ -3,6 +3,27 @@
 User-facing and trainer-facing summary of what each version of `finance-incident-multi-agent` delivers.
 
 ---
+## v1.8.0 - Grok Chat & Supervision Documentation
+
+**Release date:** 2026-06-26
+
+This release completes the supervision experience by connecting the AI Agent Chat to the backend and documenting the full platform.
+
+### What's New
+
+- `POST /chat` now uses Grok through the backend instead of returning frontend fallback text.
+- Chat requests include the current incident, analysis result and full conversation history.
+- The React frontend is organized as a supervision platform with Dashboard, Incident Analysis, AI Agent Chat, Monitoring, LangGraph and Observability pages.
+- The README now documents frontend usage, `/chat`, Docker troubleshooting and version `v1.8.0`.
+- New global documentation explains what the project does and how all parts fit together.
+- New technical documentation explains backend modules, frontend state flow, endpoints, tests and deployment.
+
+### What It Means for a Demo
+
+An evaluator can analyze an incident, open the AI Agent Chat, click `Explain Fraud` or `Generate Executive Summary`, and receive a Grok-generated answer grounded in the current incident and analysis output.
+
+---
+
 ## v1.7.0 - LangSmith Observability UI
 
 **Release date:** 2026-06-26

@@ -5,6 +5,24 @@ All notable changes to `finance-incident-multi-agent` are documented here.
 This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) conventions and adheres to [Semantic Versioning](https://semver.org/).
 
 ---
+## [1.8.0] - 2026-06-26 - Grok Chat & Supervision Documentation
+
+### Added
+- `POST /chat` endpoint backed by `GrokService.call_grok()` for contextual finance incident answers.
+- `app/schemas/chat_schema.py` with typed chat request, history and response contracts.
+- `tests/test_chat_api.py` covering Grok-backed chat and Grok unavailable scenarios with mocks.
+- Full React supervision platform with Dashboard, Incident Analysis, AI Agent Chat, Monitoring, LangGraph and Observability pages.
+- `lucide-react` frontend icons.
+- `docs/GLOBAL_DOCUMENTATION.md` describing the full project, user experience and version history.
+- `docs/TECHNICAL_DOCUMENTATION.md` describing architecture, endpoints, modules, state flow, tests and deployment.
+
+### Changed
+- Frontend chat now calls the backend `/chat` route and no longer returns fixed local answers.
+- Application version updated to `1.8.0`.
+- README expanded with frontend supervision pages, `/chat`, Docker troubleshooting and documentation links.
+
+---
+
 ## [1.7.0] - 2026-06-26 - LangSmith Observability UI
 
 ### Added

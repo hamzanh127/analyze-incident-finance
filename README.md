@@ -1,4 +1,4 @@
-# Finance Incident Multi-Agent
+﻿# Finance Incident Multi-Agent
 
 [![API Tests](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/api-tests.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/api-tests.yml)
 [![AI Agent Tests](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/agent-tests.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/agent-tests.yml)
@@ -12,13 +12,13 @@
 
 ## Contexte Finance
 
-`finance-incident-multi-agent` est un projet de formation backend Python conçu pour analyser des incidents financiers: virements suspects, transactions inhabituelles, nouveaux bénéficiaires, risques de fraude, contraintes AML/KYC et besoin de revue humaine.
+`finance-incident-multi-agent` est un projet de formation backend Python conÃ§u pour analyser des incidents financiers: virements suspects, transactions inhabituelles, nouveaux bÃ©nÃ©ficiaires, risques de fraude, contraintes AML/KYC et besoin de revue humaine.
 
-Le projet illustre une architecture professionnelle avec FastAPI, Pydantic, LangGraph, agents IA spécialisés, monitoring IA, observabilité et tests automatisés.
+Le projet illustre une architecture professionnelle avec FastAPI, Pydantic, LangGraph, agents IA spÃ©cialisÃ©s, monitoring IA, observabilitÃ© et tests automatisÃ©s.
 
 ## Objectif
 
-L'objectif est de fournir une API capable de recevoir un incident financier, d'orchestrer plusieurs agents spécialisés, puis de retourner une décision structurée:
+L'objectif est de fournir une API capable de recevoir un incident financier, d'orchestrer plusieurs agents spÃ©cialisÃ©s, puis de retourner une dÃ©cision structurÃ©e:
 
 - `approved`
 - `manual_review`
@@ -28,7 +28,7 @@ Chaque analyse retourne aussi un `correlation_id`, des recommandations, un bloc 
 
 ## Architecture Multi-Agent
 
-L'orchestration est gérée par LangGraph.
+L'orchestration est gÃ©rÃ©e par LangGraph.
 
 Pipeline:
 
@@ -44,33 +44,33 @@ START
 -> END
 ```
 
-`SupervisorAgent` ne lance pas directement les agents. Il génère un `correlation_id`, crée l'état initial, appelle le graph LangGraph compilé, puis formate la réponse finale compatible avec `AnalyzeResponse`.
+`SupervisorAgent` ne lance pas directement les agents. Il gÃ©nÃ¨re un `correlation_id`, crÃ©e l'Ã©tat initial, appelle le graph LangGraph compilÃ©, puis formate la rÃ©ponse finale compatible avec `AnalyzeResponse`.
 
-## Rôle Des Agents
+## RÃ´le Des Agents
 
-- `SupervisorAgent`: orchestre l'analyse via LangGraph et prépare la réponse API.
+- `SupervisorAgent`: orchestre l'analyse via LangGraph et prÃ©pare la rÃ©ponse API.
 - `RiskAgent`: analyse le niveau de risque financier avec Grok.
-- `FraudAgent`: détecte les signaux de fraude financière avec Grok.
-- `ComplianceAgent`: évalue AML, KYC, gouvernance et besoin d'escalade conformité avec Grok.
-- `MonitoringAgent`: suit l'exécution, le statut, la latence et les indicateurs d'observabilité.
+- `FraudAgent`: dÃ©tecte les signaux de fraude financiÃ¨re avec Grok.
+- `ComplianceAgent`: Ã©value AML, KYC, gouvernance et besoin d'escalade conformitÃ© avec Grok.
+- `MonitoringAgent`: suit l'exÃ©cution, le statut, la latence et les indicateurs d'observabilitÃ©.
 
 ## Monitoring IA
 
-Le service inclut des contrôles IA simples, déterministes et testables:
+Le service inclut des contrÃ´les IA simples, dÃ©terministes et testables:
 
-- toxicité
+- toxicitÃ©
 - hallucination
 - prompt injection
 - PII
 - estimation de tokens
-- estimation de coût
+- estimation de coÃ»t
 - latence
 
-Ces contrôles sont centralisés dans `app/monitoring`.
+Ces contrÃ´les sont centralisÃ©s dans `app/monitoring`.
 
-## Observabilité Et Correlation ID
+## ObservabilitÃ© Et Correlation ID
 
-Chaque analyse retourne un identifiant de corrélation:
+Chaque analyse retourne un identifiant de corrÃ©lation:
 
 ```text
 FIN-YYYYMMDD-XXXXXX
@@ -84,7 +84,7 @@ Exemple:
 }
 ```
 
-Ce `correlation_id` permet de relier une réponse API, un log, un événement d'observabilité et une investigation manuelle.
+Ce `correlation_id` permet de relier une rÃ©ponse API, un log, un Ã©vÃ©nement d'observabilitÃ© et une investigation manuelle.
 
 ## AI Observability
 
@@ -105,13 +105,47 @@ Quand LangSmith est active, chaque trace contient notamment `correlation_id`, `r
 
 ## Endpoints API
 
-| Méthode | Endpoint | Description |
+| MÃ©thode | Endpoint | Description |
 |---|---|---|
 | `GET` | `/` | Statut du service |
-| `GET` | `/health` | Santé du service et des agents |
-| `GET` | `/metrics` | Métriques en mémoire |
+| `GET` | `/health` | SantÃ© du service et des agents |
+| `GET` | `/metrics` | MÃ©triques en mÃ©moire |
 | `GET` | `/observability` | Configuration d'observabilite LangSmith |
 | `POST` | `/analyze` | Analyse d'un incident financier |
+| `POST` | `/chat` | Chat IA contextuel avec Grok, incident, resultat d'analyse et historique |
+
+## Frontend Supervision Platform
+
+Le frontend React + Vite est maintenant une plateforme de supervision dediee au systeme Multi-Agent Finance. Il ne modifie pas la logique backend; il consomme les endpoints FastAPI et expose les signaux du workflow.
+
+Pages principales:
+
+- `Dashboard`: statut global Backend, LangGraph, Grok, LangSmith, Monitoring, Docker et Render.
+- `Incident Analysis`: formulaire d'incident, animation Supervisor started, progression Risk/Fraud/Compliance/Monitoring/Report et synthese de decision.
+- `AI Agent Chat`: assistant IA connecte a `POST /chat`; le backend appelle Grok avec `incident`, `analysis_result` et `history`.
+- `Monitoring`: centre securite avec Static Checks, Grok AI Safety Review, Telemetry et Final Security Decision.
+- `LangGraph`: vue animee du workflow Supervisor -> Risk -> Fraud -> Compliance -> Monitoring -> Report.
+- `Observability`: correlation ID, execution time, logs, metrics, LangSmith status, project, tracing, version et environment.
+
+Le frontend utilise `lucide-react` pour les icones et `VITE_API_BASE_URL` pour cibler le backend:
+
+```text
+VITE_API_BASE_URL=http://localhost:8002
+```
+
+Lancement frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Interface locale:
+
+```text
+http://localhost:5173
+```
 
 ## Exemple JSON Input
 
@@ -161,7 +195,7 @@ Quand LangSmith est active, chaque trace contient notamment `correlation_id`, `r
 
 ## Installation Locale
 
-Prérequis:
+PrÃ©requis:
 
 - Python 3.12
 - pip
@@ -172,7 +206,7 @@ Installation:
 pip install -r requirements-dev.txt
 ```
 
-Créer un fichier `.env` à partir de `.env.example` si nécessaire:
+CrÃ©er un fichier `.env` Ã  partir de `.env.example` si nÃ©cessaire:
 
 ```bash
 cp .env.example .env
@@ -215,10 +249,23 @@ http://localhost:8002
 docker compose up --build
 ```
 
-Arrêter les conteneurs:
+ArrÃªter les conteneurs:
 
 ```bash
 docker compose down
+```
+
+Si Docker affiche `failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine`, Docker Desktop n'est pas demarre ou son moteur Linux n'est pas disponible. Ouvrir Docker Desktop, attendre `Docker Desktop is running`, puis verifier:
+
+```powershell
+docker version
+```
+
+Ensuite:
+
+```powershell
+docker build -t finance-incident-agent .
+docker run -p 8002:8002 --env-file .env finance-incident-agent
 ```
 
 ## Tests Pytest
@@ -235,24 +282,24 @@ Alternative portable:
 python -m pytest -v
 ```
 
-Les tests utilisent des mocks/stubs pour éviter les appels externes à Grok.
+Les tests utilisent des mocks/stubs pour Ã©viter les appels externes Ã  Grok.
 
 ## Continuous Integration
 
 Le projet utilise GitHub Actions pour valider automatiquement les principaux aspects techniques du service:
 
-- `ci.yml`: exécute la suite pytest complète sur `push` et `pull_request`.
+- `ci.yml`: exÃ©cute la suite pytest complÃ¨te sur `push` et `pull_request`.
 - `api-tests.yml`: valide uniquement les endpoints FastAPI critiques: `/`, `/health`, `/analyze` et les payloads invalides.
 - `agent-tests.yml`: valide le workflow multi-agent IA: `SupervisorAgent`, `RiskAgent`, `FraudAgent`, `ComplianceAgent` et `MonitoringAgent`.
-- `langgraph-tests.yml`: valide l'orchestration LangGraph, la compilation du graph, l'exécution des nodes, la propagation du state et le final state.
-- `monitoring-tests.yml`: valide les composants de monitoring IA: latence, tokens, coût, toxicité, hallucination, prompt injection, PII et health monitor.
+- `langgraph-tests.yml`: valide l'orchestration LangGraph, la compilation du graph, l'exÃ©cution des nodes, la propagation du state et le final state.
+- `monitoring-tests.yml`: valide les composants de monitoring IA: latence, tokens, coÃ»t, toxicitÃ©, hallucination, prompt injection, PII et health monitor.
 - `governance-tests.yml`: valide les documents de gouvernance comme `agent_card.json` et `docs/RUNBOOK.md`.
-- `coverage.yml`: génère les rapports de couverture `xml`, `html` et `term`, applique un seuil minimal de 70%, et publie `htmlcov/` comme artifact GitHub.
-- `docker-build.yml`: vérifie que l'image Docker peut être construite sur push vers `main`.
-- `security.yml`: lance Bandit sur le dossier `app` pour détecter les problèmes de sécurité Python courants.
-- `render-health.yml`: peut être déclenché manuellement pour vérifier `/health` sur l'URL Render configurée via `RENDER_URL`.
+- `coverage.yml`: gÃ©nÃ¨re les rapports de couverture `xml`, `html` et `term`, applique un seuil minimal de 70%, et publie `htmlcov/` comme artifact GitHub.
+- `docker-build.yml`: vÃ©rifie que l'image Docker peut Ãªtre construite sur push vers `main`.
+- `security.yml`: lance Bandit sur le dossier `app` pour dÃ©tecter les problÃ¨mes de sÃ©curitÃ© Python courants.
+- `render-health.yml`: peut Ãªtre dÃ©clenchÃ© manuellement pour vÃ©rifier `/health` sur l'URL Render configurÃ©e via `RENDER_URL`.
 
-## Déploiement Render
+## DÃ©ploiement Render
 
 Le fichier `render.yaml` configure un service web Docker avec:
 
@@ -263,57 +310,59 @@ healthCheckPath: /health
 
 Sur Render:
 
-1. Créer un service depuis le dépôt.
-2. Vérifier que le runtime Docker est utilisé.
+1. CrÃ©er un service depuis le dÃ©pÃ´t.
+2. VÃ©rifier que le runtime Docker est utilisÃ©.
 3. Configurer les variables d'environnement.
-4. Déployer.
-5. Vérifier `/health`.
+4. DÃ©ployer.
+5. VÃ©rifier `/health`.
 
 ## Runbook Incident
 
 Actions principales:
 
-- Vérifier `/health` si l'API ne répond pas.
-- Lire `correlation_id` dans chaque réponse `/analyze`.
-- Si `risk_level` est `high`, déclencher une revue humaine.
+- VÃ©rifier `/health` si l'API ne rÃ©pond pas.
+- Lire `correlation_id` dans chaque rÃ©ponse `/analyze`.
+- Si `risk_level` est `high`, dÃ©clencher une revue humaine.
 - Si `prompt_injection.detected` est vrai, ne pas faire confiance au texte brut.
-- Si PII est détectée, éviter de copier les données sensibles dans les logs.
-- Si l'API est down, vérifier les logs puis redémarrer Docker.
-- Sur Render, vérifier le statut du déploiement, les logs et `/health`.
+- Si PII est dÃ©tectÃ©e, Ã©viter de copier les donnÃ©es sensibles dans les logs.
+- Si l'API est down, vÃ©rifier les logs puis redÃ©marrer Docker.
+- Sur Render, vÃ©rifier le statut du dÃ©ploiement, les logs et `/health`.
 
 Voir aussi:
 
 - `docs/RUNBOOK.md`
 - `docs/OBSERVABILITY.md`
 - `docs/GOVERNANCE.md`
+- `docs/GLOBAL_DOCUMENTATION.md`
+- `docs/TECHNICAL_DOCUMENTATION.md`
 
 ## Structure Du Projet
 
 ```text
 finance-incident-multi-agent/
-├── app/
-│   ├── main.py
-│   ├── config.py
-│   ├── api/
-│   ├── agents/
-│   ├── graph/
-│   ├── monitoring/
-│   ├── schemas/
-│   ├── services/
-│   └── utils/
-├── tests/
-├── docs/
-├── .github/workflows/
-├── agent_card.json
-├── Dockerfile
-├── docker-compose.yml
-├── render.yaml
-├── requirements.txt
-├── requirements-dev.txt
-├── pytest.ini
-├── README.md
-├── .env.example
-└── .gitignore
+â”œâ”€â”€ app/
+â”‚   â”œâ”€â”€ main.py
+â”‚   â”œâ”€â”€ config.py
+â”‚   â”œâ”€â”€ api/
+â”‚   â”œâ”€â”€ agents/
+â”‚   â”œâ”€â”€ graph/
+â”‚   â”œâ”€â”€ monitoring/
+â”‚   â”œâ”€â”€ schemas/
+â”‚   â”œâ”€â”€ services/
+â”‚   â””â”€â”€ utils/
+â”œâ”€â”€ tests/
+â”œâ”€â”€ docs/
+â”œâ”€â”€ .github/workflows/
+â”œâ”€â”€ agent_card.json
+â”œâ”€â”€ Dockerfile
+â”œâ”€â”€ docker-compose.yml
+â”œâ”€â”€ render.yaml
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ requirements-dev.txt
+â”œâ”€â”€ pytest.ini
+â”œâ”€â”€ README.md
+â”œâ”€â”€ .env.example
+â””â”€â”€ .gitignore
 ```
 
 ## Project Versions
@@ -328,46 +377,41 @@ finance-incident-multi-agent/
 | **v1.5.0** | Grok-Based AI Monitoring | Hybrid static + Grok safety pipeline, final decision, fallback |
 | **v1.6.0** | LangSmith Observability | External LangGraph tracing, metadata, `/observability` endpoint |
 | **v1.7.0** | LangSmith Observability UI | Frontend workflow, correlation_id, monitoring, metrics, LangSmith panels and connected chat |
+| **v1.8.0** | Grok Chat & Supervision Docs | Real `/chat` endpoint with Grok, frontend supervision platform, global and technical documentation |
 
 See [`docs/VERSIONING.md`](docs/VERSIONING.md) for the full versioning strategy, [`docs/CHANGELOG.md`](docs/CHANGELOG.md) for the detailed feature log, and [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) for user-facing release summaries.
 
 ## Release Timeline
 
 ```text
-v1.0.0 ─── Backend MVP
-  │         FastAPI · LangGraph · 4 Agents · Docker · 9 CI workflows · 71 tests
-  │
-  ▼
-v1.1.0 ─── Frontend Dashboard
-  │         React + Vite · IncidentForm · ResultDashboard · MetricsPanel · CORS
-  │
-  ▼
-v1.2.0 ─── Agent Chat Experience
-  │         AgentChat · AgentMessage · Progressive reveal · Thinking animation
-  │
-  ▼
-v1.3.0 ─── AI Security & Telemetry
-  │         Real PII · Prompt Injection (9 patterns) · French toxicity
-  │         Live security badge · Tokens & cost from real data
-  │
-  ▼
-v1.4.0 ─── Production Release
-  │         VERSIONING.md · CHANGELOG.md · RELEASE_NOTES.md
-  │         Updated ARCHITECTURE.md · README Release Timeline
-  │
-  ▼
-v1.5.0 ─── Grok-Based AI Monitoring
-            MonitoringService hybrid pipeline (static + Grok)
-            Grok safety review · final_decision · fallback mode
-            Frontend: [Static]/[Grok]/[Final] badges · 88 tests ✅
-  │
-  ▼
-v1.6.0 ─── LangSmith Observability
-            LangGraph tracing · finance_incident_analysis run
-            Agent-step metadata · /observability endpoint
-            Offline mocked tests · 93 tests ✅
+v1.0.0 -> Backend MVP
+          FastAPI, LangGraph, 4 agents, Docker, CI workflows, 71 tests
+
+v1.1.0 -> Frontend Dashboard
+          React + Vite, incident form, result dashboard, metrics panel, CORS
+
+v1.2.0 -> Agent Chat Experience
+          Agent chat UI, progressive reveal, thinking animation
+
+v1.3.0 -> AI Security & Telemetry
+          Real PII, prompt injection, toxicity, live security badge
+
+v1.4.0 -> Production Release
+          VERSIONING.md, CHANGELOG.md, RELEASE_NOTES.md, architecture docs
+
+v1.5.0 -> Grok-Based AI Monitoring
+          Hybrid static + Grok safety pipeline, final_decision, fallback mode
+
+v1.6.0 -> LangSmith Observability
+          LangGraph tracing, finance_incident_analysis run, /observability endpoint
+
+v1.7.0 -> LangSmith Observability UI
+          Frontend supervision panels, workflow timeline, monitoring center
+
+v1.8.0 -> Grok Chat & Documentation
+          POST /chat with Grok, contextual assistant, global and technical docs
 ```
 
-## Statut Démo
+## Statut DÃ©mo
 
-Ce projet est adapté à une démonstration de fin de semaine: il présente une API complète, une orchestration multi-agent avec LangGraph, une couche d'observabilité, des règles de gouvernance, Docker, CI/CD et une suite de tests automatisés.
+Ce projet est adaptÃ© Ã  une dÃ©monstration de fin de semaine: il prÃ©sente une API complÃ¨te, une orchestration multi-agent avec LangGraph, une couche d'observabilitÃ©, des rÃ¨gles de gouvernance, Docker, CI/CD et une suite de tests automatisÃ©s.

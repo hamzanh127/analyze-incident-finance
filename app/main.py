@@ -8,7 +8,7 @@ from app.api.observability import router as observability_router
 from app.api.routes import router as incident_router
 
 SERVICE_NAME = "finance-incident-multi-agent"
-SERVICE_VERSION = "1.6.0"
+SERVICE_VERSION = "1.8.0"
 
 root_router = APIRouter(tags=["root"])
 
