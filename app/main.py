@@ -1,6 +1,7 @@
 """FastAPI application entrypoint."""
 
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.health import router as health_router
 from app.api.metrics import router as metrics_router
@@ -9,6 +10,11 @@ from app.api.routes import router as incident_router
 
 SERVICE_NAME = "finance-incident-multi-agent"
 SERVICE_VERSION = "1.8.0"
+origins = [
+    "https://finance-incident-multi-agent-production.up.railway.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
 
 root_router = APIRouter(tags=["root"])
 
@@ -29,11 +35,10 @@ def create_app() -> FastAPI:
         title=SERVICE_NAME,
         version=SERVICE_VERSION,
     )
-    
-    from fastapi.middleware.cors import CORSMiddleware
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
