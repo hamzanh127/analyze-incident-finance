@@ -1,0 +1,54 @@
+name: 🕸️ LangGraph Workflow Tests
+
+run-name: Validate LangGraph orchestration.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  langgraph-tests:
+    name: LangGraph orchestration tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Fetch the project source code.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Use the Python version targeted by the application.
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Install runtime and test dependencies.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      # Run only LangGraph-specific tests.
+      - name: Run LangGraph tests
+        run: |
+          pytest \
+            tests/test_graph_builder.py \
+            tests/test_graph_nodes.py \
+            tests/test_graph_state.py \
+            -v
+
+      # Publish a concise test summary in GitHub Actions.
+      - name: Write LangGraph test summary
+        if: always()
+        run: |
+          {
+            echo "## 🕸️ LangGraph Workflow Tests"
+            echo ""
+            echo "Validate LangGraph orchestration."
+            echo ""
+            echo "Executed test files:"
+            echo "- tests/test_graph_builder.py"
+            echo "- tests/test_graph_nodes.py"
+            echo "- tests/test_graph_state.py"
+          } >> "$GITHUB_STEP_SUMMARY"
