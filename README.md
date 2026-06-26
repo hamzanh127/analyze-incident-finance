@@ -415,3 +415,8 @@ v1.8.0 -> Grok Chat & Documentation
 ## Statut DÃ©mo
 
 Ce projet est adaptÃ© Ã  une dÃ©monstration de fin de semaine: il prÃ©sente une API complÃ¨te, une orchestration multi-agent avec LangGraph, une couche d'observabilitÃ©, des rÃ¨gles de gouvernance, Docker, CI/CD et une suite de tests automatisÃ©s.
+
+## Lien deploy 
+
+back : https://analyze-incident-finance-production.up.railway.app/
+front : https://finance-incident-multi-agent-production.up.railway.app/
