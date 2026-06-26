@@ -1,0 +1,16 @@
+name: Render Health
+
+on:
+  workflow_dispatch:
+
+jobs:
+  render-health:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Render health
+        env:
+          RENDER_URL: ${{ vars.RENDER_URL }}
+        run: |
+          test -n "$RENDER_URL"
+          curl --fail --silent --show-error "$RENDER_URL/health"

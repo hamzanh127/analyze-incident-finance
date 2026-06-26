@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: finance-incident-multi-agent
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health

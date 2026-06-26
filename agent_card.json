@@ -1,0 +1,89 @@
+{
+  "name": "finance-incident-multi-agent",
+  "version": "1.0.0",
+  "owner": "Training Project Team",
+  "domain": "Financial incident analysis",
+  "description": "FastAPI service orchestrating specialized AI agents with LangGraph to analyze financial incidents, assess risk, detect fraud, evaluate compliance, and produce a monitored decision.",
+  "agents": [
+    {
+      "name": "SupervisorAgent",
+      "role": "Runs the compiled LangGraph workflow and formats the final API response."
+    },
+    {
+      "name": "RiskAgent",
+      "role": "Analyzes financial risk level and score."
+    },
+    {
+      "name": "FraudAgent",
+      "role": "Detects fraud suspicion and fraud signals."
+    },
+    {
+      "name": "ComplianceAgent",
+      "role": "Evaluates AML, KYC, governance, and escalation requirements."
+    },
+    {
+      "name": "MonitoringAgent",
+      "role": "Tracks execution status, correlation id, latency, and observability flags."
+    }
+  ],
+  "inputs": {
+    "customer_id": "string",
+    "incident_type": "string",
+    "amount": "number >= 0",
+    "currency": "string",
+    "country": "string",
+    "device": "string",
+    "beneficiary_status": "string",
+    "description": "string"
+  },
+  "outputs": {
+    "correlation_id": "string",
+    "risk_level": "low | medium | high",
+    "risk_score": "integer 0-100",
+    "fraud_suspicion": "boolean",
+    "fraud_score": "integer 0-100",
+    "compliance_status": "compliant | review_required | escalation_required",
+    "decision": "approved | manual_review | blocked",
+    "recommendations": "list[string]",
+    "monitoring": "object",
+    "report": "object"
+  },
+  "limitations": [
+    "The project is designed for training and demonstration purposes.",
+    "The default monitoring checks are deterministic and keyword or regex based.",
+    "AI results depend on the configured Grok service and should be reviewed before production use.",
+    "No database persistence is implemented.",
+    "No external API call should be performed in unit tests."
+  ],
+  "safety_rules": [
+    "Return structured JSON for AI agent outputs.",
+    "Use controlled fallbacks when Grok or parsing fails.",
+    "Block or review incidents with high risk, fraud suspicion, compliance escalation, prompt injection, or PII findings.",
+    "Always return a correlation_id for traceability.",
+    "Never expose secrets or API keys in logs or responses."
+  ],
+  "monitoring": {
+    "health_endpoint": "/health",
+    "metrics_endpoint": "/metrics",
+    "correlation_id_format": "FIN-YYYYMMDD-XXXXXX",
+    "checks": [
+      "toxicity",
+      "hallucination",
+      "prompt_injection",
+      "pii",
+      "token_usage",
+      "cost_estimation",
+      "latency"
+    ]
+  },
+  "deployment": {
+    "local": "uvicorn app.main:app --reload",
+    "docker": "docker compose up --build",
+    "render": "Configured with render.yaml",
+    "required_environment_variables": [
+      "GROK_API_KEY",
+      "GROK_MODEL",
+      "GROK_API_BASE_URL"
+    ]
+  }
+}
