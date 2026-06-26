@@ -1,0 +1,58 @@
+name: 🤖 AI Agent Tests
+
+run-name: Validate the complete AI multi-agent workflow.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  agent-tests:
+    name: AI multi-agent workflow tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Fetch the project source code.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Match the project runtime version.
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Install runtime and development dependencies.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      # Run only AI agent and supervisor tests.
+      - name: Run AI agent tests
+        run: |
+          pytest \
+            tests/test_supervisor_agent.py \
+            tests/test_risk_agent.py \
+            tests/test_fraud_agent.py \
+            tests/test_compliance_agent.py \
+            tests/test_monitoring_agent.py \
+            -v
+
+      # Publish a concise test summary in GitHub Actions.
+      - name: Write agent test summary
+        if: always()
+        run: |
+          {
+            echo "## 🤖 AI Agent Tests"
+            echo ""
+            echo "Validate the complete AI multi-agent workflow."
+            echo ""
+            echo "Executed test files:"
+            echo "- tests/test_supervisor_agent.py"
+            echo "- tests/test_risk_agent.py"
+            echo "- tests/test_fraud_agent.py"
+            echo "- tests/test_compliance_agent.py"
+            echo "- tests/test_monitoring_agent.py"
+          } >> "$GITHUB_STEP_SUMMARY"
