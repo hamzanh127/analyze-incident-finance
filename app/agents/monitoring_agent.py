@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from app.monitoring.langsmith_tracing import monitoring_langsmith_payload
 from app.monitoring.monitoring_service import MonitoringService
 from app.schemas.incident_schema import IncidentRequest
 
@@ -12,6 +13,7 @@ OBSERVABILITY_FLAGS: dict[str, bool] = {
     "toxicity_check_enabled": True,
     "prompt_injection_check_enabled": True,
     "pii_check_enabled": True,
+    "grok_safety_review_enabled": True,
 }
 
 
@@ -52,6 +54,17 @@ class MonitoringAgent:
         """Return local monitoring check results for current workflow compatibility."""
         return self._monitoring_service.evaluate(incident.description)
 
+    def analyze_full(self, text: str) -> dict[str, Any]:
+        """Run the full hybrid analysis and return Static Checks, Grok Review and Final Decision."""
+        result = self._monitoring_service.analyze_text(text)
+        return {
+            "static_checks": result.get("static_checks", {}),
+            "grok_safety_review": result.get("grok_safety_review", {}),
+            "final_decision": result.get("final_decision", {}),
+            "safe": result.get("safe", True),
+            "metrics": result.get("metrics", {}),
+        }
+
     def _build_payload(
         self,
         correlation_id: str,
@@ -63,4 +76,5 @@ class MonitoringAgent:
             "status": status,
             "execution_time_ms": execution_time_ms,
             "observability": dict(OBSERVABILITY_FLAGS),
+            "langsmith": monitoring_langsmith_payload(),
         }

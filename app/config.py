@@ -1,11 +1,23 @@
 """Application configuration."""
 
 from functools import lru_cache
-from os import getenv
+from os import environ, getenv
 
 from pydantic import BaseModel, Field
 
 from app.utils.constants import DEFAULT_ENVIRONMENT, DEFAULT_LOG_LEVEL, SERVICE_NAME, SERVICE_VERSION
+
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - dependency is declared, fallback keeps tests import-safe.
+    def load_dotenv() -> bool:
+        return False
+
+
+load_dotenv()
+
+LANGSMITH_DEFAULT_PROJECT = "finance-incident-multi-agent"
+LANGSMITH_DEFAULT_ENDPOINT = "https://api.smith.langchain.com"
 
 
 class Settings(BaseModel):
@@ -17,18 +29,41 @@ class Settings(BaseModel):
     debug: bool = Field(default=False)
     log_level: str = Field(default=DEFAULT_LOG_LEVEL)
     enable_monitoring: bool = Field(default=True)
+    langsmith_tracing: bool = Field(default=False)
+    langsmith_api_key: str = Field(default="")
+    langsmith_project: str = Field(default=LANGSMITH_DEFAULT_PROJECT)
+    langsmith_endpoint: str = Field(default=LANGSMITH_DEFAULT_ENDPOINT)
+
+    @property
+    def langsmith_enabled(self) -> bool:
+        """Return true when LangSmith tracing can send traces."""
+        return self.langsmith_tracing and bool(self.langsmith_api_key.strip())
 
     @classmethod
     def from_environment(cls) -> "Settings":
         """Build settings from environment variables."""
-        return cls(
+        settings = cls(
             app_name=getenv("APP_NAME", SERVICE_NAME),
             app_version=getenv("APP_VERSION", SERVICE_VERSION),
             environment=getenv("ENVIRONMENT", DEFAULT_ENVIRONMENT),
             debug=_get_bool("DEBUG", default=False),
             log_level=getenv("LOG_LEVEL", DEFAULT_LOG_LEVEL).upper(),
             enable_monitoring=_get_bool("ENABLE_MONITORING", default=True),
+            langsmith_tracing=_get_bool("LANGSMITH_TRACING", default=False),
+            langsmith_api_key=getenv("LANGSMITH_API_KEY", ""),
+            langsmith_project=getenv("LANGSMITH_PROJECT", LANGSMITH_DEFAULT_PROJECT),
+            langsmith_endpoint=getenv("LANGSMITH_ENDPOINT", LANGSMITH_DEFAULT_ENDPOINT),
         )
+        settings.apply_langsmith_environment()
+        return settings
+
+    def apply_langsmith_environment(self) -> None:
+        """Expose LangSmith settings through the environment expected by LangGraph."""
+        environ["LANGSMITH_TRACING"] = "true" if self.langsmith_enabled else "false"
+        environ["LANGSMITH_PROJECT"] = self.langsmith_project
+        environ["LANGSMITH_ENDPOINT"] = self.langsmith_endpoint
+        if self.langsmith_api_key:
+            environ["LANGSMITH_API_KEY"] = self.langsmith_api_key
 
 
 def _get_bool(name: str, default: bool) -> bool:

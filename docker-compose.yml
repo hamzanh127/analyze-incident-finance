@@ -4,4 +4,4 @@ services:
     ports:
       - "8002:8002"
     env_file:
-      - .env.example
+      - .env

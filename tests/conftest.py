@@ -1,9 +1,13 @@
 """Shared pytest fixtures."""
 
+import os
 from collections.abc import Iterator
 from typing import Any
 
 import pytest
+
+os.environ["LANGSMITH_TRACING"] = "false"
+os.environ["LANGSMITH_API_KEY"] = ""
 
 from app.schemas.incident_schema import IncidentRequest
 

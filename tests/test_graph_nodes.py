@@ -66,13 +66,29 @@ def test_ai_safety_node_execution(monkeypatch, incident) -> None:
     class MonitoringServiceStub:
         def analyze_text(self, text: str) -> dict:
             assert text == incident.description
-            return {"safe": True, "tokens": {"estimated_tokens": 3}}
+            return {
+                "safe": True,
+                "static_checks": {
+                    "toxicity": {"status": "safe", "score": 0.0, "matched_terms": []},
+                    "prompt_injection": {"detected": False, "matched_patterns": []},
+                    "pii": {"detected": False, "types": [], "matches_count": 0},
+                    "tokens": {"estimated_tokens": 3, "word_count": 2, "multiplier": 1.3},
+                    "cost": {"estimated_cost": 0.0, "input_tokens": 3, "output_tokens": 0, "currency": "USD"},
+                },
+                "grok_safety_review": {"available": True, "overall_risk": "safe", "recommended_action": "allow"},
+                "final_decision": {"safe": True, "action": "allow", "source": "hybrid", "reasons": []},
+                "metrics": {},
+            }
 
     monkeypatch.setattr(nodes, "MonitoringService", MonitoringServiceStub)
 
     result = nodes.ai_safety_node({"incident": incident})
 
     assert result["ai_safety_result"]["safe"] is True
+    assert "static_checks" in result["ai_safety_result"]
+    assert "grok_safety_review" in result["ai_safety_result"]
+    assert "final_decision" in result["ai_safety_result"]
+
 
 
 def test_decision_node_execution() -> None:

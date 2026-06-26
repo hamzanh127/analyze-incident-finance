@@ -8,6 +8,9 @@ class FinanceIncidentState(TypedDict, total=False):
 
     incident: Any
     correlation_id: str
+    request_id: str
+    timestamp: str
+    execution_time_ms: float
     risk_result: dict[str, Any]
     fraud_result: dict[str, Any]
     compliance_result: dict[str, Any]

@@ -8,27 +8,40 @@ from app.agents.fraud_agent import FraudAgent
 from app.agents.monitoring_agent import MonitoringAgent
 from app.agents.risk_agent import RiskAgent
 from app.graph.state import FinanceIncidentState
+from app.monitoring.langsmith_tracing import build_trace_metadata, trace_step
 from app.monitoring.monitoring_service import MonitoringService
 
 
 def risk_node(state: FinanceIncidentState) -> dict[str, Any]:
     """Run the risk analysis agent."""
-    result = RiskAgent().analyze(state["incident"])
+    result = trace_step(
+        "Risk Agent",
+        state,
+        lambda: RiskAgent().analyze(state["incident"]),
+    )
     return {"risk_result": result}
 
 
 def fraud_node(state: FinanceIncidentState) -> dict[str, Any]:
     """Run the fraud detection agent."""
-    result = FraudAgent().analyze(state["incident"])
+    result = trace_step(
+        "Fraud Agent",
+        state,
+        lambda: FraudAgent().analyze(state["incident"]),
+    )
     return {"fraud_result": result}
 
 
 def compliance_node(state: FinanceIncidentState) -> dict[str, Any]:
     """Run the compliance analysis agent."""
-    result = ComplianceAgent().analyze(
-        state["incident"],
-        state["risk_result"],
-        state["fraud_result"],
+    result = trace_step(
+        "Compliance Agent",
+        state,
+        lambda: ComplianceAgent().analyze(
+            state["incident"],
+            state["risk_result"],
+            state["fraud_result"],
+        ),
     )
     return {"compliance_result": result}
 
@@ -73,25 +86,36 @@ def monitoring_node(state: FinanceIncidentState) -> dict[str, Any]:
     execution_time_ms = 0.0
     if isinstance(start_time, float):
         execution_time_ms = round((perf_counter() - start_time) * 1000, 3)
-    monitoring = MonitoringAgent().finish(
-        correlation_id=state["correlation_id"],
-        status="processed",
-        execution_time_ms=execution_time_ms,
+    state["execution_time_ms"] = execution_time_ms
+    trace_metadata = build_trace_metadata(state, execution_time_ms=execution_time_ms)
+    monitoring = trace_step(
+        "Monitoring Agent",
+        state,
+        lambda: MonitoringAgent().finish(
+            correlation_id=state["correlation_id"],
+            status="processed",
+            execution_time_ms=execution_time_ms,
+            extra={"langsmith_metadata": trace_metadata},
+        ),
     )
     return {"monitoring": monitoring}
 
 
 def report_node(state: FinanceIncidentState) -> dict[str, Any]:
     """Build the final structured incident report."""
-    report = {
-        "summary": f"Finance incident analysis completed with decision: {state.get('decision', 'manual_review')}.",
-        "risk_analysis": state.get("risk_result", {}),
-        "fraud_analysis": state.get("fraud_result", {}),
-        "compliance_analysis": state.get("compliance_result", {}),
-        "ai_safety": state.get("ai_safety_result", {}),
-        "recommended_next_steps": state.get("recommendations", []),
-        "final_status": "completed",
-    }
+    report = trace_step(
+        "Report Generation",
+        state,
+        lambda: {
+            "summary": f"Finance incident analysis completed with decision: {state.get('decision', 'manual_review')}.",
+            "risk_analysis": state.get("risk_result", {}),
+            "fraud_analysis": state.get("fraud_result", {}),
+            "compliance_analysis": state.get("compliance_result", {}),
+            "ai_safety": state.get("ai_safety_result", {}),
+            "recommended_next_steps": state.get("recommendations", []),
+            "final_status": "completed",
+        },
+    )
     return {"report": report}
 
 
@@ -121,12 +145,23 @@ def _build_recommendations(
 def _fallback_ai_safety(error: str) -> dict[str, Any]:
     return {
         "safe": True,
-        "toxicity": {"status": "safe", "score": 0.0},
-        "hallucination": {"risk_level": "low"},
-        "prompt_injection": {"detected": False},
-        "pii": {"detected": False},
-        "tokens": {"estimated_tokens": 0},
-        "cost": {"estimated_cost": 0.0},
+        "static_checks": {
+            "toxicity": {"status": "safe", "score": 0.0, "matched_terms": []},
+            "hallucination": {"risk_level": "low"},
+            "prompt_injection": {"detected": False, "matched_patterns": []},
+            "pii": {"detected": False, "types": [], "matches_count": 0},
+            "tokens": {"estimated_tokens": 0, "word_count": 0, "multiplier": 1.3},
+            "cost": {"estimated_cost": 0.0, "input_tokens": 0, "output_tokens": 0, "currency": "USD"},
+        },
+        "grok_safety_review": {
+            "available": False,
+            "error": f"Fallback due to node error: {error}",
+        },
+        "final_decision": {
+            "safe": True,
+            "action": "allow",
+            "source": "static",
+            "reasons": [f"Fallback due to node error: {error}"],
+        },
         "metrics": {},
-        "error": error,
     }

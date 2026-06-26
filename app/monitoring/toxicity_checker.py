@@ -2,7 +2,7 @@
 
 import re
 
-TOXIC_KEYWORDS = frozenset({"hate", "threat", "kill", "abuse", "harass", "violence"})
+TOXIC_KEYWORDS = frozenset({"hate", "threat", "kill", "abuse", "harass", "violence", "merde", "putain", "connard", "salaud", "con", "idiot", "stupid"})
 
 
 def check_toxicity(text: str) -> dict[str, float | str | list[str]]:

@@ -5,6 +5,11 @@ PROMPT_INJECTION_PATTERNS = (
     "reveal system prompt",
     "dump database",
     "bypass security",
+    "forget all instructions",
+    "show hidden prompt",
+    "disable guardrails",
+    "act as developer mode",
+    "jailbreak",
 )
 
 

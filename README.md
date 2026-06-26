@@ -86,6 +86,23 @@ Exemple:
 
 Ce `correlation_id` permet de relier une réponse API, un log, un événement d'observabilité et une investigation manuelle.
 
+## AI Observability
+
+Le projet combine cinq niveaux d'observabilite IA:
+
+- `MonitoringAgent`: produit le statut d'execution, la latence, les flags de monitoring local et le bloc LangSmith dans la reponse.
+- `LangSmith`: trace le workflow LangGraph complet avec le run `finance_incident_analysis` et des etapes distinctes pour les agents.
+- `Correlation ID`: relie la reponse API, les logs, les metriques, le rapport et les traces LangSmith.
+- `Metrics`: expose les compteurs et latences via `/metrics`.
+- `Logs`: conserve des evenements structures sans secrets ni donnees sensibles inutiles.
+
+Difference importante:
+
+- `MonitoringAgent` fait partie du workflow applicatif. Il resume l'etat d'execution et les controles locaux retournes au client.
+- `LangSmith` est une plateforme externe d'observabilite. Elle observe les runs, les timings, les metadata et les etapes LangGraph, mais ne participe pas a la logique metier et ne change aucune decision.
+
+Quand LangSmith est active, chaque trace contient notamment `correlation_id`, `request_id`, `incident_type`, `risk_level`, `decision`, `execution_time`, `environment` et `application_version`.
+
 ## Endpoints API
 
 | Méthode | Endpoint | Description |
@@ -93,6 +110,7 @@ Ce `correlation_id` permet de relier une réponse API, un log, un événement d'
 | `GET` | `/` | Statut du service |
 | `GET` | `/health` | Santé du service et des agents |
 | `GET` | `/metrics` | Métriques en mémoire |
+| `GET` | `/observability` | Configuration d'observabilite LangSmith |
 | `POST` | `/analyze` | Analyse d'un incident financier |
 
 ## Exemple JSON Input
@@ -167,6 +185,17 @@ GROK_API_KEY=your_grok_api_key_here
 GROK_MODEL=grok-2-latest
 GROK_API_BASE_URL=https://api.x.ai/v1
 ```
+
+Variables LangSmith optionnelles:
+
+```text
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=your_langsmith_api_key
+LANGSMITH_PROJECT=finance-incident-multi-agent
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+```
+
+Sans `LANGSMITH_API_KEY`, le tracing LangSmith est automatiquement desactive.
 
 ## Lancement Avec Uvicorn
 
@@ -285,6 +314,57 @@ finance-incident-multi-agent/
 ├── README.md
 ├── .env.example
 └── .gitignore
+```
+
+## Project Versions
+
+| Version | Name | Description |
+|---|---|---|
+| **v1.0.0** | Backend MVP | FastAPI + LangGraph multi-agent pipeline, Docker, CI/CD, 71 tests |
+| **v1.1.0** | Frontend Dashboard | React + Vite visual interface, form, results panel, CORS |
+| **v1.2.0** | Agent Chat Experience | Immersive conversational UI with progressive agent message reveal |
+| **v1.3.0** | AI Security & Telemetry | Real PII, prompt injection, toxicity detection; live security badge |
+| **v1.4.0** | Production Release | Complete versioning documentation; project ready for presentation |
+| **v1.5.0** | Grok-Based AI Monitoring | Hybrid static + Grok safety pipeline, final decision, fallback |
+| **v1.6.0** | LangSmith Observability | External LangGraph tracing, metadata, `/observability` endpoint |
+
+See [`docs/VERSIONING.md`](docs/VERSIONING.md) for the full versioning strategy, [`docs/CHANGELOG.md`](docs/CHANGELOG.md) for the detailed feature log, and [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) for user-facing release summaries.
+
+## Release Timeline
+
+```text
+v1.0.0 ─── Backend MVP
+  │         FastAPI · LangGraph · 4 Agents · Docker · 9 CI workflows · 71 tests
+  │
+  ▼
+v1.1.0 ─── Frontend Dashboard
+  │         React + Vite · IncidentForm · ResultDashboard · MetricsPanel · CORS
+  │
+  ▼
+v1.2.0 ─── Agent Chat Experience
+  │         AgentChat · AgentMessage · Progressive reveal · Thinking animation
+  │
+  ▼
+v1.3.0 ─── AI Security & Telemetry
+  │         Real PII · Prompt Injection (9 patterns) · French toxicity
+  │         Live security badge · Tokens & cost from real data
+  │
+  ▼
+v1.4.0 ─── Production Release
+  │         VERSIONING.md · CHANGELOG.md · RELEASE_NOTES.md
+  │         Updated ARCHITECTURE.md · README Release Timeline
+  │
+  ▼
+v1.5.0 ─── Grok-Based AI Monitoring
+            MonitoringService hybrid pipeline (static + Grok)
+            Grok safety review · final_decision · fallback mode
+            Frontend: [Static]/[Grok]/[Final] badges · 88 tests ✅
+  │
+  ▼
+v1.6.0 ─── LangSmith Observability
+            LangGraph tracing · finance_incident_analysis run
+            Agent-step metadata · /observability endpoint
+            Offline mocked tests · 93 tests ✅
 ```
 
 ## Statut Démo
