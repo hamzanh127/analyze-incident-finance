@@ -1,5 +1,15 @@
 # Finance Incident Multi-Agent
 
+[![API Tests](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/api-tests.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/api-tests.yml)
+[![AI Agent Tests](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/agent-tests.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/agent-tests.yml)
+[![LangGraph Workflow Tests](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/langgraph-tests.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/langgraph-tests.yml)
+[![AI Monitoring Tests](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/monitoring-tests.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/monitoring-tests.yml)
+[![Governance Tests](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/governance-tests.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/governance-tests.yml)
+[![Coverage Report](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/coverage.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/coverage.yml)
+[![Docker Build](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/docker-build.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/docker-build.yml)
+[![Security Scan](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/security.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/security.yml)
+[![Render Health Check](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/render-health.yml/badge.svg)](https://github.com/hamzanh127/analyze-incident-finance/actions/workflows/render-health.yml)
+
 ## Contexte Finance
 
 `finance-incident-multi-agent` est un projet de formation backend Python conçu pour analyser des incidents financiers: virements suspects, transactions inhabituelles, nouveaux bénéficiaires, risques de fraude, contraintes AML/KYC et besoin de revue humaine.
@@ -198,15 +208,20 @@ python -m pytest -v
 
 Les tests utilisent des mocks/stubs pour éviter les appels externes à Grok.
 
-## GitHub Actions
+## Continuous Integration
 
-Le projet contient plusieurs workflows:
+Le projet utilise GitHub Actions pour valider automatiquement les principaux aspects techniques du service:
 
-- `ci.yml`: installe les dépendances et lance pytest.
-- `docker-build.yml`: construit l'image Docker sur push vers `main`.
-- `coverage.yml`: lance `pytest --cov=app --cov-fail-under=70`.
-- `security.yml`: lance Bandit sur `app`.
-- `render-health.yml`: vérifie `/health` sur Render via `RENDER_URL`.
+- `ci.yml`: exécute la suite pytest complète sur `push` et `pull_request`.
+- `api-tests.yml`: valide uniquement les endpoints FastAPI critiques: `/`, `/health`, `/analyze` et les payloads invalides.
+- `agent-tests.yml`: valide le workflow multi-agent IA: `SupervisorAgent`, `RiskAgent`, `FraudAgent`, `ComplianceAgent` et `MonitoringAgent`.
+- `langgraph-tests.yml`: valide l'orchestration LangGraph, la compilation du graph, l'exécution des nodes, la propagation du state et le final state.
+- `monitoring-tests.yml`: valide les composants de monitoring IA: latence, tokens, coût, toxicité, hallucination, prompt injection, PII et health monitor.
+- `governance-tests.yml`: valide les documents de gouvernance comme `agent_card.json` et `docs/RUNBOOK.md`.
+- `coverage.yml`: génère les rapports de couverture `xml`, `html` et `term`, applique un seuil minimal de 70%, et publie `htmlcov/` comme artifact GitHub.
+- `docker-build.yml`: vérifie que l'image Docker peut être construite sur push vers `main`.
+- `security.yml`: lance Bandit sur le dossier `app` pour détecter les problèmes de sécurité Python courants.
+- `render-health.yml`: peut être déclenché manuellement pour vérifier `/health` sur l'URL Render configurée via `RENDER_URL`.
 
 ## Déploiement Render
 
