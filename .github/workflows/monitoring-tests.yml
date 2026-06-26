@@ -1,0 +1,64 @@
+name: 📊 AI Monitoring Tests
+
+run-name: Validate AI monitoring components.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  monitoring-tests:
+    name: AI monitoring component tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Fetch the project source code.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Use the Python version targeted by the project.
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Install runtime and development dependencies.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      # Run only AI monitoring tests.
+      - name: Run AI monitoring tests
+        run: |
+          pytest \
+            tests/test_latency_monitor.py \
+            tests/test_token_monitor.py \
+            tests/test_cost_monitor.py \
+            tests/test_toxicity_checker.py \
+            tests/test_hallucination_checker.py \
+            tests/test_prompt_injection_checker.py \
+            tests/test_pii_checker.py \
+            tests/test_health_monitor.py \
+            -v
+
+      # Publish a concise test summary in GitHub Actions.
+      - name: Write monitoring test summary
+        if: always()
+        run: |
+          {
+            echo "## 📊 AI Monitoring Tests"
+            echo ""
+            echo "Validate AI monitoring components."
+            echo ""
+            echo "Executed test files:"
+            echo "- tests/test_latency_monitor.py"
+            echo "- tests/test_token_monitor.py"
+            echo "- tests/test_cost_monitor.py"
+            echo "- tests/test_toxicity_checker.py"
+            echo "- tests/test_hallucination_checker.py"
+            echo "- tests/test_prompt_injection_checker.py"
+            echo "- tests/test_pii_checker.py"
+            echo "- tests/test_health_monitor.py"
+          } >> "$GITHUB_STEP_SUMMARY"
